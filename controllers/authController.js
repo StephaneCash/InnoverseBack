@@ -11,8 +11,8 @@ const createToken = (id) => {
 
 const signUp = async (req, res) => {
 
-    let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let codeLength = 16;
+    let chars = "0123456789";
+    let codeLength = 25;
     let codeSplit = "";
 
     for (let i = 0; i <= codeLength; i++) {
@@ -22,7 +22,7 @@ const signUp = async (req, res) => {
 
     let tab = codeSplit.split('');
 
-    tab[14] = '-';
+    tab[22] = '-';
 
     let codeGenere = tab.join().replace(/[,]/g, '');
 

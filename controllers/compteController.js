@@ -8,8 +8,8 @@ module.exports.getAllComptes = async (req, res) => {
 
 module.exports.addCompte = async (req, res) => {
     try {
-        let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        let codeLength = 16;
+        let chars = "0123456789";
+        let codeLength = 20;
         let codeSplit = "";
 
         for (let i = 0; i <= codeLength; i++) {
@@ -19,7 +19,7 @@ module.exports.addCompte = async (req, res) => {
 
         let tab = codeSplit.split('');
 
-        tab[14] = '-';
+        tab[17] = '-';
 
         let codeGenere = tab.join().replace(/[,]/g, '');
         let compte = await compteModel.create({

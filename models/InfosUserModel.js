@@ -6,10 +6,6 @@ const InfosUserSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        photoUser: {
-            type: String,
-            required: true,
-        },
         AdresseDomicile: {
             type: String,
             trim: true,
