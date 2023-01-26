@@ -6,37 +6,31 @@ const InfosUserSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        AdresseDomicile: {
+        adresse: {
             type: String,
             trim: true,
         },
-        typePieceIdentite: {
-            type: String,
-        },
-        photoPieceIdentite: {
-            type: String,
-        },
-        numeroPieceIdentie: {
+        numTel: {
             type: String,
             required: true,
         },
-        numeroTel: {
+        dateAniv: {
             type: String,
             required: true,
         },
-        nationalite: {
+        codePostal: {
             type: String,
             required: true,
         },
-        autreNoms: {
+        ville: {
             type: String,
             required: true,
         },
-        profession: {
+        sexe: {
             type: String,
             required: true,
         },
-        gradeProfession: {
+        prenom: {
             type: String,
             required: true,
         }

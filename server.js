@@ -47,7 +47,7 @@ app.use('/api/devises', deviseRoutes);
 app.use("/api/comptes", comptesRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use('/api/categories', categoriesRoutes);
-app.use("/api/infos/user", infosUserRoutes);
+app.use("/api/user/infos", infosUserRoutes);
 app.use("/api/user", photoUserRoutes);
 
 app.listen(process.env.PORT, () => {
