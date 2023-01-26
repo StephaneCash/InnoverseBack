@@ -10,6 +10,10 @@ const InfosUserSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        nomFamille: {
+            type: String,
+            trim: true,
+        },
         numTel: {
             type: String,
             required: true,
