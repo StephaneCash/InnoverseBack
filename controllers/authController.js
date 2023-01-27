@@ -49,8 +49,10 @@ const signIn = async (req, res) => {
     try {
         const user = await userModel.login(email, password);
         const token = createToken(user._id);
-        res.cookie('jwt', token, { httpOnly: false, maxAge });
-        res.status(200).json({ "message ": 'Utilisateur connecté avec succès', user: user._id, token })
+        if (token) {
+            res.cookie('jwt', token, { httpOnly: false, maxAge });
+            res.status(200).json({ "message ": 'Utilisateur connecté avec succès', user: user._id, token })
+        }
     } catch (err) {
         const errors = signInErrors(err)
         return res.status(500).json({ errors });

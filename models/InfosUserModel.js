@@ -5,6 +5,7 @@ const InfosUserSchema = new mongoose.Schema(
         userId: {
             type: String,
             required: true,
+            unique: true
         },
         adresse: {
             type: String,
