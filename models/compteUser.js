@@ -10,6 +10,7 @@ const CompteSchema = new mongoose.Schema(
             type: String,
             trim: true,
             maxlength: 500,
+            unique: true
         },
         deviseId: {
             type: String,
