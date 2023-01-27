@@ -10,6 +10,7 @@ const transactionsRoutes = require("./routes/transactions.routes");
 const categoriesRoutes = require("./routes/categories.routes");
 const infosUserRoutes = require('./routes/infosUser.routes');
 const photoUserRoutes = require('./routes/photoUser.routes');
+const modePaiementRoutes = require('./routes/modePaiement.routes');
 
 require('dotenv').config({ path: './config/.env' })
 require('./config/db')
@@ -49,6 +50,7 @@ app.use("/api/transactions", transactionsRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use("/api/user/infos", infosUserRoutes);
 app.use("/api/user", photoUserRoutes);
+app.use("/api/compte/modes-paiement", modePaiementRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log(`App écoute sur le port ${process.env.PORT}`)
