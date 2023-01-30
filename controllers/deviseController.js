@@ -1,4 +1,5 @@
 const deviseModel = require('../models/deviseModel');
+const compteModel = require('../models/compteUser');
 const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllDevises = async (req, res) => {
@@ -15,6 +16,12 @@ module.exports.addDevise = async (req, res) => {
             }
         } else if (req.body.nom === "epargne") {
             let devise = await deviseModel.create(req.body);
+            let compte = await compteModel.findOneAndUpdate(
+                { _id: devise.compteId },
+                { isValid: true },
+                { new: true, upsert: true, setDefaultsOnInsert: true }
+            );
+            console.log(compte)
             if (devise) {
                 return deviseModel.findByIdAndUpdate(
                     devise._id,
@@ -22,8 +29,8 @@ module.exports.addDevise = async (req, res) => {
                         $push: {
                             typeCompteEpargnes: {
                                 compteId: devise.compteId,
-                                nom: req.body.nom,
-                                montant: req.body.montant
+                                nom: req.body.type,
+                                montant: 0
                             }
                         }
                     },

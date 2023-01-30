@@ -33,6 +33,7 @@ const signUp = async (req, res) => {
         compte = await compteModel.create({
             userId: user.id,
             numero: codeGenere,
+            isValid: false
         });
         res.status(201).json({ user: user.id ? message : '"User créé avec succès' });
     }

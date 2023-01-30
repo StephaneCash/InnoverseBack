@@ -14,11 +14,13 @@ const DeviseSchema = new mongoose.Schema(
         compteId: {
             type: String
         },
+        intitule: String,
         typeCompteEpargnes: {
             type: [
                 {
                     compteId: String,
                     nom: String,
+                    montant: Number
                 }
             ]
         }
