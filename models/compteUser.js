@@ -20,6 +20,9 @@ const CompteSchema = new mongoose.Schema(
         },
         idCategorie: {
             type: String,
+        },
+        isValid: {
+            type: Boolean
         }
     },
     {

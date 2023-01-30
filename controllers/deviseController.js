@@ -8,9 +8,32 @@ module.exports.getAllDevises = async (req, res) => {
 
 module.exports.addDevise = async (req, res) => {
     try {
-        let devise = await deviseModel.create(req.body);
-        if (devise) {
-            res.status(201).json({ message: "Devise créée avec succès", data: devise });
+        if (req.body.nom === "courant") {
+            let devise = await deviseModel.create(req.body);
+            if (devise) {
+                res.status(201).json({ message: "Devise créée avec succès", data: devise });
+            }
+        } else if (req.body.nom === "epargne") {
+            let devise = await deviseModel.create(req.body);
+            if (devise) {
+                return deviseModel.findByIdAndUpdate(
+                    devise._id,
+                    {
+                        $push: {
+                            typeCompteEpargnes: {
+                                compteId: devise.compteId,
+                                nom: req.body.nom,
+                                montant: req.body.montant
+                            }
+                        }
+                    },
+                    { new: true }
+                ).then(response => {
+                    res.status(200).json({ message: "Devise créée avec succès", data: response })
+                }).catch(err => {
+                    return res.status(500).json(err);
+                })
+            }
         }
     } catch (error) {
         return res.status(500).json({ error });
@@ -72,7 +95,7 @@ module.exports.deleteUser = async (req, res) => {
 
 module.exports.findDevisesByCompteId = (req, res) => {
     if (!ObjectID.isValid(req.body.compteId)) {
-        return res.status(400).json({message: `Id Inconnu ${req.body.compteId}`})
+        return res.status(400).json({ message: `Id Inconnu ${req.body.compteId}` })
     } else {
         deviseModel.find({ compteId: new RegExp('^' + req.body.compteId + '$', "i") }, (err, docs) => {
             if (!err) {
