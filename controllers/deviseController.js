@@ -14,6 +14,11 @@ module.exports.addDevise = async (req, res) => {
             if (devise) {
                 res.status(201).json({ message: "Devise créée avec succès", data: devise });
             }
+            let compte = await compteModel.findOneAndUpdate(
+                { _id: devise.compteId },
+                { isValid: true },
+                { new: true, upsert: true, setDefaultsOnInsert: true }
+            );
         } else if (req.body.nom === "epargne") {
             let devise = await deviseModel.create(req.body);
             let compte = await compteModel.findOneAndUpdate(
