@@ -2,11 +2,15 @@ const infoSupplementaireModel = require('../models/InfosUserModel');
 const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllInfosUser = async (req, res) => {
-    const infosUser = await infoSupplementaireModel.find({ userId: req.body.userId });
-    if (infosUser) {
-        res.status(200).json(infosUser);
-    } else {
-        return res.status(400).json(infosUser);
+    try {
+        const infosUser = await infoSupplementaireModel.find({ userId: req.body.userId });
+        if (infosUser) {
+            res.status(200).json(infosUser);
+        } else {
+            return res.status(400).json(infosUser);
+        }
+    } catch (error) {
+        return res.status(500).json(error);
     }
 };
 

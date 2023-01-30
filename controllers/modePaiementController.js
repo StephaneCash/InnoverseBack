@@ -2,8 +2,16 @@ const ModePaiement = require('../models/modelPaiementUser');
 const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllModepaiement = async (req, res) => {
-    const modePaiement = await ModePaiement.find();
-    res.status(200).json(modePaiement);
+    try {
+        const data = await ModePaiement.find({ userId: req.body.userId });
+        if (data) {
+            res.status(200).json(data);
+        } else {
+            return res.status(400).json(data);
+        }
+    } catch (error) {
+        return res.status(500).json(error);
+    }
 };
 
 module.exports.addModePaiement = async (req, res) => {
