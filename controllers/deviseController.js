@@ -21,7 +21,6 @@ module.exports.addDevise = async (req, res) => {
                 { isValid: true },
                 { new: true, upsert: true, setDefaultsOnInsert: true }
             );
-            console.log(compte)
             if (devise) {
                 return deviseModel.findByIdAndUpdate(
                     devise._id,
