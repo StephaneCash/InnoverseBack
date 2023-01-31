@@ -64,6 +64,20 @@ module.exports.getOneCompteByUserId = (req, res) => {
     }
 };
 
+module.exports.getOneCompteByNumCompte = (req, res) => {
+    if (!ObjectID.isValid(req.body.numCompte)) {
+        return res.status(400).json({ message: `Id inconnu ${req.body.numCompte}` })
+    } else {
+        compteModel.findOne({ numero: new RegExp('^' + req.body.numCompte + '$', "i") }, (err, docs) => {
+            if (!err) {
+                res.send(docs);
+            } else {
+                res.status(404).json('ID inconnu : ' + err);
+            }
+        });
+    }
+};
+
 module.exports.updateCompte = async (req, res) => {
     if (!ObjectID.isValid(req.params.id)) {
         return res.status(400).send('ID inconnu : ' + req.params.id)

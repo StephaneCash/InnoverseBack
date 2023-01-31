@@ -8,5 +8,6 @@ router.put('/:id', compteController.updateCompte);
 router.delete('/:id', compteController.deleteCompte);
 
 router.post('/getCompteById', compteController.getOneCompteByUserId);
+router.post('/getCompteByNum', compteController.getOneCompteByNumCompte);
 
 module.exports = router;
