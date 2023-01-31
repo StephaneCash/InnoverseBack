@@ -65,9 +65,7 @@ module.exports.getOneCompteByUserId = (req, res) => {
 };
 
 module.exports.getOneCompteByNumCompte = (req, res) => {
-    if (!ObjectID.isValid(req.body.numCompte)) {
-        return res.status(400).json({ message: `Id inconnu ${req.body.numCompte}` })
-    } else {
+    try {
         compteModel.findOne({ numero: new RegExp('^' + req.body.numCompte + '$', "i") }, (err, docs) => {
             if (!err) {
                 res.send(docs);
@@ -75,6 +73,8 @@ module.exports.getOneCompteByNumCompte = (req, res) => {
                 res.status(404).json('ID inconnu : ' + err);
             }
         });
+    } catch (error) {
+        return res.status(500).json({ message: error })
     }
 };
 
