@@ -12,7 +12,7 @@ const createToken = (id) => {
 const signUp = async (req, res) => {
 
     let chars = "0123456789";
-    let codeLength = 25;
+    let codeLength = 11;
     let codeSplit = "";
 
     for (let i = 0; i <= codeLength; i++) {
@@ -22,7 +22,7 @@ const signUp = async (req, res) => {
 
     let tab = codeSplit.split('');
 
-    tab[22] = '-';
+    tab[8] = '-';
 
     let codeGenere = tab.join().replace(/[,]/g, '');
 
@@ -32,7 +32,7 @@ const signUp = async (req, res) => {
         const user = await userModel.create({ pseudo, email, password });
         compte = await compteModel.create({
             userId: user.id,
-            numero: codeGenere,
+            numero: "IN" + codeGenere,
             isValid: false
         });
         res.status(201).json({ user: user.id ? message : '"User créé avec succès' });

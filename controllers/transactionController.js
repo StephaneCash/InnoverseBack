@@ -11,6 +11,7 @@ module.exports.getAllTransactions = async (req, res) => {
 module.exports.addTransaction = async (req, res) => {
     try {
         if (req.body.type === "epargne") {
+            console.log(req.body.deviseIdDest)
             deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
                 if (!err) {
                     return deviseModel.findById(
@@ -26,7 +27,16 @@ module.exports.addTransaction = async (req, res) => {
 
                             return response.save(err => {
                                 if (!err) {
-                                    res.status(200).json(response)
+                                    deviseModel.findOneAndUpdate(
+                                        { _id: req.body.deviseIdDest },
+                                        { montant: req.body.montantDest },
+                                    )
+                                        .then(respo => {
+                                            res.status(200).json(response)
+                                        })
+                                        .catch(err => {
+                                            console.log(err)
+                                        })
                                 } else {
                                     return res.status(500).json("Données non enregistrées");
                                 }
@@ -49,6 +59,19 @@ module.exports.addTransaction = async (req, res) => {
                         { new: true, upsert: true, setDefaultsOnInsert: true }
                     )
                         .then((docs) => {
+                            try {
+                                deviseModel.findOneAndUpdate(
+                                    { _id: req.body.deviseIdDest },
+                                    { montant: req.body.montantDest },
+                                    { new: true, upsert: true, setDefaultsOnInsert: true }
+                                )
+                                    .then((docs) => {
+
+                                    })
+                                    .catch((err) => { return res.status(500).send({ message: err }) })
+                            } catch (err) {
+                                return res.status(500).json({ message: err })
+                            }
                             res.status(200).json({
                                 docs, message: 'Devise updated'
                             })
