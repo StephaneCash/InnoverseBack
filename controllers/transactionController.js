@@ -10,40 +10,52 @@ module.exports.getAllTransactions = async (req, res) => {
 
 module.exports.addTransaction = async (req, res) => {
     try {
-        if (!ObjectID.isValid(req.params.id)) {
-            return res.status(400).send('ID inconnu : ' + req.params.id)
-        } else {
-            try {
-                deviseModel.findById(req.params.id, (err, docs) => {
-                    if (!err) {
-                        if (docs.montant && docs.montant > req.body.montant) {
-                            transactionModel.create({
-                                userId: req.body.userId,
-                                compteId: req.body.compteId,
-                                motif: req.body.motif,
-                                deviseId: req.body.deviseId,
-                                montant: req.body.montant,
-                                nomsUserTransfere: req.body.nomsUserTransfere
-                            });
-                            deviseModel.findOneAndUpdate(
-                                { _id: docs._id },
-                                { montant: docs.montant - req.body.montant },
-                                { new: true, upsert: true, setDefaultsOnInsert: true }
-                            )
-                                .then((resp) => {
-                                    res.status(201).json({ message: "Transaction effectuée avec succès" });
-                                })
-                                .catch((err) => { return res.status(500).send({ message: err }) })
-                        } else {
-                            return res.status(400).json({ message: "Votre solde est insufisant" });
+        if (req.body.type === "epargne") {
+            deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
+                if (!err) {
+                    return deviseModel.findById(
+                        resp._id,
+                        (err, response) => {
+                            const dataCompte = {};
+                            for (let i = 0; i < response.typeCompteEpargnes.length; i++) {
+                                if (response.typeCompteEpargnes[i]._id.equals(req.body.deviseTypeId)) {
+                                    dataCompte.compte = response.typeCompteEpargnes[i];
+                                    response.typeCompteEpargnes[i].montant = response.typeCompteEpargnes[i].montant - req.body.montant
+                                }
+                            }
+
+                            return response.save(err => {
+                                if (!err) {
+                                    res.status(200).json(response)
+                                } else {
+                                    return res.status(500).json("Données non enregistrées");
+                                }
+                            })
                         }
-                    } else {
-                        console.log('ID inconnu : ' + err);
-                    }
-                });
-            } catch (err) {
-                return res.stats(500).json(err);
-            }
+                    )
+                }
+            })
+        } else if (req.body.type === "courant") {
+            deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
+                let valueMontant = 0;
+                for (let i = 0; i < 1; i++) {
+                    valueMontant = resp.montant
+                }
+
+                if (!err) {
+                    deviseModel.findOneAndUpdate(
+                        { _id: resp._id },
+                        { montant: valueMontant - req.body.montant },
+                        { new: true, upsert: true, setDefaultsOnInsert: true }
+                    )
+                        .then((docs) => {
+                            res.status(200).json({
+                                docs, message: 'Devise updated'
+                            })
+                        })
+                        .catch((err) => { return res.status(500).send({ message: err }) })
+                }
+            })
         }
     } catch (error) {
         const erreurs = transactions(error)
