@@ -1,4 +1,6 @@
 const compteModel = require('../models/compteUser');
+const deviseModel = require('../models/deviseModel');
+const userModel = require('../models/userModel');
 const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllComptes = async (req, res) => {
@@ -68,7 +70,17 @@ module.exports.getOneCompteByNumCompte = (req, res) => {
     try {
         compteModel.findOne({ numero: new RegExp('^' + req.body.numCompte + '$', "i") }, (err, docs) => {
             if (!err) {
-                res.send(docs);
+                try {
+                    deviseModel.findOne({ compteId: docs._id }, (errs, data) => {
+                        if (!errs) {
+                            userModel.findById(docs.userId, (error, user) => {
+                                res.json({ user: user, compte: data });
+                            })
+                        }
+                    })
+                } catch (errors) {
+                    return res.status(500).json({ message: errors })
+                }
             } else {
                 res.status(404).json('ID inconnu : ' + err);
             }
