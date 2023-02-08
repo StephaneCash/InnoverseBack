@@ -7,7 +7,7 @@ module.exports.getAllTransactions = async (req, res) => {
     try {
         const transactions = await transactionModel.find();
         if (transactions) {
-            res.status(200).json({ message: "La liste de transactions a été bien trouvée.", data: transactions });
+            res.status(200).json({ message: "La liste de transactions a été bien trouvée.", data: transactions, taille: transactions.length });
         } else {
             res.status(404).json({ message: "Aucune donnée trouvée.", data: transactions });
         }
