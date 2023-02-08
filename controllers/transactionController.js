@@ -9,9 +9,9 @@ module.exports.getAllTransactions = async (req, res) => {
 };
 
 module.exports.addTransaction = async (req, res) => {
+    console.log(req.body)
     try {
         if (req.body.type === "epargne") {
-            console.log(req.body.deviseIdDest)
             deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
                 if (!err) {
                     return deviseModel.findById(
@@ -32,6 +32,17 @@ module.exports.addTransaction = async (req, res) => {
                                         { montant: req.body.montantDest },
                                     )
                                         .then(respo => {
+                                            transactionModel.create(
+                                                {
+                                                    userId: req.body.userId,
+                                                    compteId: req.body.compteId,
+                                                    motif: req.body.motif,
+                                                    montant: req.body.montant,
+                                                    nomClient: req.body.nomUserTransfere,
+                                                    status: true,
+                                                    deviseId: req.body.devise
+                                                }
+                                            )
                                             res.status(200).json(response)
                                         })
                                         .catch(err => {

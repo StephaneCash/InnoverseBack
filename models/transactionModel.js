@@ -10,10 +10,6 @@ const TransactionSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        deviseId: {
-            type: String,
-            required: true,
-        },
         motif: {
             type: String,
             required: true,
@@ -22,10 +18,12 @@ const TransactionSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
-        nomsUserTransfere: {
+        nomClient: {
             type: String,
             required: true,
         },
+        status: Boolean,
+        deviseId: String
     },
     {
         timestamps: true
