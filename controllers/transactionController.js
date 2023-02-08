@@ -4,8 +4,16 @@ const ObjectID = require('mongoose').Types.ObjectId;
 const { transactions } = require('../utils/errorsUtiles')
 
 module.exports.getAllTransactions = async (req, res) => {
-    const transactions = await transactionModel.find();
-    res.status(200).json({ message: "La liste de transactions a été bien trouvée.", data: transactions });
+    try {
+        const transactions = await transactionModel.find();
+        if (transactions) {
+            res.status(200).json({ message: "La liste de transactions a été bien trouvée.", data: transactions });
+        } else {
+            res.status(404).json({ message: "Aucune donnée trouvée.", data: transactions });
+        }
+    } catch (error) {
+        return res.status(500).json({ error });
+    }
 };
 
 module.exports.addTransaction = async (req, res) => {
@@ -97,21 +105,21 @@ module.exports.addTransaction = async (req, res) => {
     }
 }
 
-/*
-
-*/
-
-module.exports.getOneTransaction = (req, res) => {
-    if (!ObjectID.isValid(req.params.id)) {
-        return res.status(400).send('ID inconnu : ' + req.params.id)
-    } else {
-        transactionModel.findById(req.params.id, (err, docs) => {
-            if (!err) {
-                res.send(docs);
-            } else {
-                res.status(404).json('ID inconnu : ' + err);
-            }
-        });
+module.exports.getOneTransaction = async (req, res) => {
+    try {
+        if (!ObjectID.isValid(req.params.id)) {
+            return res.status(400).send('ID inconnu : ' + req.params.id)
+        } else {
+            await transactionModel.findById(req.params.id, (err, docs) => {
+                if (!err) {
+                    res.send(docs);
+                } else {
+                    res.status(404).json('ID inconnu : ' + err);
+                }
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({ error })
     }
 };
 
