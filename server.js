@@ -4,7 +4,6 @@ const app = express();
 const fileUpload = require("express-fileupload");
 
 const userRoutes = require('./routes/user.routes');
-const deviseRoutes = require("./routes/devise.routes");
 const comptesRoutes = require("./routes/comptes.routes");
 const transactionsRoutes = require("./routes/transactions.routes");
 const categoriesRoutes = require("./routes/categories.routes");
@@ -46,7 +45,6 @@ app.get('/api/jwtid', requireAuth, (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
-app.use('/api/devises', deviseRoutes);
 app.use("/api/comptes", comptesRoutes);
 app.use("/api/transactions", transactionsRoutes);
 app.use('/api/categories', categoriesRoutes);

@@ -23,7 +23,7 @@ const TransactionSchema = new mongoose.Schema(
             required: true,
         },
         status: Boolean,
-        deviseId: String
+        devise: String
     },
     {
         timestamps: true

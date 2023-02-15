@@ -1,7 +1,7 @@
+const compteModel = require('../models/compteModel');
 const transactionModel = require('../models/transactionModel');
-const deviseModel = require('../models/deviseModel');
+const userModel = require('../models/userModel');
 const ObjectID = require('mongoose').Types.ObjectId;
-const { transactions } = require('../utils/errorsUtiles')
 
 module.exports.getAllTransactions = async (req, res) => {
     try {
@@ -17,91 +17,41 @@ module.exports.getAllTransactions = async (req, res) => {
 };
 
 module.exports.addTransaction = async (req, res) => {
-    console.log(req.body)
     try {
-        if (req.body.type === "epargne") {
-            deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
-                if (!err) {
-                    return deviseModel.findById(
-                        resp._id,
-                        (err, response) => {
-                            const dataCompte = {};
-                            for (let i = 0; i < response.typeCompteEpargnes.length; i++) {
-                                if (response.typeCompteEpargnes[i]._id.equals(req.body.deviseTypeId)) {
-                                    dataCompte.compte = response.typeCompteEpargnes[i];
-                                    response.typeCompteEpargnes[i].montant = response.typeCompteEpargnes[i].montant - req.body.montant
-                                }
-                            }
+        const transaction = await transactionModel.create({
+            userId: req.body.userId,
+            compteId: req.body.compteId,
+            motif: req.body.motif,
+            montant: req.body.montant,
+            status: true,
+            devise: req.body.deviseArr,
+            nomClient: req.body.nomUserTransfere
+        });
 
-                            return response.save(err => {
-                                if (!err) {
-                                    deviseModel.findOneAndUpdate(
-                                        { _id: req.body.deviseIdDest },
-                                        { montant: req.body.montantDest },
-                                    )
-                                        .then(respo => {
-                                            transactionModel.create(
-                                                {
-                                                    userId: req.body.userId,
-                                                    compteId: req.body.compteId,
-                                                    motif: req.body.motif,
-                                                    montant: req.body.montant,
-                                                    nomClient: req.body.nomUserTransfere,
-                                                    status: true,
-                                                    deviseId: req.body.devise
-                                                }
-                                            )
-                                            res.status(200).json(response)
-                                        })
-                                        .catch(err => {
-                                            console.log(err)
-                                        })
-                                } else {
-                                    return res.status(500).json("Données non enregistrées");
-                                }
-                            })
-                        }
-                    )
-                }
-            })
-        } else if (req.body.type === "courant") {
-            deviseModel.findOne({ compteId: req.body.compteId }, (err, resp) => {
-                let valueMontant = 0;
-                for (let i = 0; i < 1; i++) {
-                    valueMontant = resp.montant
-                }
+        if (transaction) {
+            return compteModel.findOne(
+                { _id: req.body.compteId },
+                (err, docs) => {
+                    const repComment = docs.devises.find((comment) =>
+                        comment._id.equals(req.body.idDevise)
+                    );
+                    if (repComment) {
+                        repComment.montant = repComment.montant - req.body.montant;
+                    } else {
+                        return res.status(404).send('Comment not found ' + req.body.commentId);
+                    }
 
-                if (!err) {
-                    deviseModel.findOneAndUpdate(
-                        { _id: resp._id },
-                        { montant: valueMontant - req.body.montant },
-                        { new: true, upsert: true, setDefaultsOnInsert: true }
-                    )
-                        .then((docs) => {
-                            try {
-                                deviseModel.findOneAndUpdate(
-                                    { _id: req.body.deviseIdDest },
-                                    { montant: req.body.montantDest },
-                                    { new: true, upsert: true, setDefaultsOnInsert: true }
-                                )
-                                    .then((docs) => {
-
-                                    })
-                                    .catch((err) => { return res.status(500).send({ message: err }) })
-                            } catch (err) {
-                                return res.status(500).json({ message: err })
-                            }
-                            res.status(200).json({
-                                docs, message: 'Devise updated'
-                            })
-                        })
-                        .catch((err) => { return res.status(500).send({ message: err }) })
+                    return docs.save((err) => {
+                        if (!err) return res.status(200).send(docs);
+                        return res.status(500).send(err);
+                    })
                 }
-            })
+            ).clone().catch(function(err){ console.log(err)})
+
         }
+
     } catch (error) {
-        const erreurs = transactions(error)
-        return res.stats(500).json(erreurs);
+        return res.status(500).json(error)
     }
 }
 
@@ -155,6 +105,26 @@ module.exports.deleteTransaction = async (req, res) => {
                 res.status(200).json({ message: 'Suppression effectuée avec succès' });
             } else {
                 res.status(404).json({ message: 'Transaction non trouvée.' });
+            }
+        } catch (err) {
+            return res.status(500).json({ message: err })
+        }
+    }
+}
+
+module.exports.getAllTransactionsByUserId = async (req, res) => {
+    if (!ObjectID.isValid(req.params.id)) {
+        return res.status(400).send('ID inconnu : ' + req.params.id)
+    } else {
+        try {
+            let transactions = await transactionModel.find({ userId: req.params.id });
+            if (transactions) {
+                res.status(200).json({
+                    message: 'Transactions trouvées avec succès',
+                    data: transactions, taille: transactions.length
+                });
+            } else {
+                res.status(404).json({ message: 'Transactions non trouvées.' });
             }
         } catch (err) {
             return res.status(500).json({ message: err })
