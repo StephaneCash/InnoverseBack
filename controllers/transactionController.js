@@ -38,15 +38,36 @@ module.exports.addTransaction = async (req, res) => {
                     if (repComment) {
                         repComment.montant = repComment.montant - req.body.montant;
                     } else {
-                        return res.status(404).send('Comment not found ' + req.body.commentId);
+                        return res.status(404).send('Comment not found ' + req.body.compteId);
                     }
 
                     return docs.save((err) => {
-                        if (!err) return res.status(200).send(docs);
+                        if (!err) {
+                            return compteModel.findOne(
+                                { _id: req.body.compteIdDest },
+                                (err, docs) => {
+                                    const repComment = docs.devises.find((devise) =>
+                                        devise.devise === req.body.deviseArr ? true : false
+                                    );
+
+                                    if (repComment) {
+                                        repComment.montant = repComment.montant + req.body.montant;
+                                    } else {
+                                        return res.status(404).send('Comment not found ' + req.body.compteIdDest);
+                                    }
+
+                                    return docs.save((err) => {
+                                        if (!err) return res.status(200).send(docs);
+                                        return res.status(500).send(err);
+                                    })
+                                }
+                            ).clone().catch(function (err) { console.log(err) })
+                        }
+
                         return res.status(500).send(err);
                     })
                 }
-            ).clone().catch(function(err){ console.log(err)})
+            ).clone().catch(function (err) { console.log(err) })
 
         }
 
