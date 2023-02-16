@@ -33,10 +33,10 @@ const signUp = async (req, res) => {
         userModel.findOne({ email: email })
             .then(async resp => {
                 if (resp) {
-                    res.status(400).json({ message: 'Cette adresse eamil est déjà prise' });
+                    res.status(400).json({ message: 'Cette adresse email est déjà prise.' });
                 } else {
                     if (password.length < 8 && password !== "") {
-                        return res.status(400).json({ message: "Votre mot de passe doit avoir au minimum 8 caractères" });
+                        return res.status(400).json({ message: "Votre mot de passe doit avoir au minimum 8 caractères." });
                     } else {
                         const salt = await bcrypt.genSalt();
                         const passHash = await bcrypt.hash(password, salt);
