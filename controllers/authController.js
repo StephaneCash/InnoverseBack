@@ -80,9 +80,8 @@ const signIn = async (req, res) => {
                             } else {
                                 const token = createToken(resp._id);
                                 if (token) {
-                                    res.cookie('jwt', token, { httpOnly: false, maxAge });
                                     res.status(200).json({ "message ": 'Utilisateur connecté avec succès', user: resp._id, token })
-                                }
+                                };
                             }
                         })
                         .catch(err => {
