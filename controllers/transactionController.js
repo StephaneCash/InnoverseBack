@@ -38,7 +38,7 @@ module.exports.addTransaction = async (req, res) => {
                     if (repComment) {
                         repComment.montant = repComment.montant - req.body.montant;
                     } else {
-                        return res.status(404).send('Comment not found ' + req.body.compteId);
+                        return res.status(404).send('Compte non trouvé ' + req.body.compteId);
                     }
 
                     return docs.save((err) => {
@@ -53,7 +53,7 @@ module.exports.addTransaction = async (req, res) => {
                                     if (repComment) {
                                         repComment.montant = repComment.montant + req.body.montant;
                                     } else {
-                                        return res.status(404).send('Comment not found ' + req.body.compteIdDest);
+                                        return res.status(404).send('Compte non trouvé ' + req.body.compteIdDest);
                                     }
 
                                     return docs.save((err) => {

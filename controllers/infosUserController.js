@@ -16,34 +16,27 @@ module.exports.getAllInfosUser = async (req, res) => {
 
 module.exports.addInfosUser = async (req, res) => {
     try {
-        let infosUser = await infoSupplementaireModel.create(req.body);
-        if (infosUser) {
-            res.status(201).json({ message: "InfosUser créé avec succès", data: infosUser });
+        let userExist = await infoSupplementaireModel.findOne({ userId: req.body.userId });
+        if (userExist) {
+            await infoSupplementaireModel.findOneAndUpdate(
+                { _id: userExist._id },
+                req.body,
+                { new: true, upsert: true, setDefaultsOnInsert: true }
+            )
+                .then((docs) => {
+                    res.status(200).json({
+                        docs, message: 'InfosUser updated'
+                    })
+                })
+                .catch((err) => { return res.status(500).send({ message: err }) })
+        } else {
+            let infosUser = await infoSupplementaireModel.create(req.body);
+            if (infosUser) {
+                res.status(201).json({ message: "InfosUser ajoutés avec succès", data: infosUser });
+            }
         }
     } catch (error) {
-        if (error && error.code && error.code === 11000) {
-            if (!ObjectID.isValid(req.body.id)) {
-                return res.status(400).send('ID inconnu : ' + req.body.id)
-            } else {
-                try {
-                    await infoSupplementaireModel.findOneAndUpdate(
-                        { _id: req.body.id },
-                        req.body,
-                        { new: true, upsert: true, setDefaultsOnInsert: true }
-                    )
-                        .then((docs) => {
-                            res.status(200).json({
-                                docs, message: 'InfosUser updated'
-                            })
-                        })
-                        .catch((err) => { return res.status(500).send({ message: err }) })
-                } catch (err) {
-                    return res.status(500).json({ message: err })
-                }
-            }
-        } else {
-            return res.status(500).json(error);
-        }
+        return res.status(500).json(error);
     }
 }
 
