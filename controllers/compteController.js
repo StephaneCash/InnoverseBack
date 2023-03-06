@@ -19,7 +19,6 @@ module.exports.configCompte = async (req, res) => {
     } else {
         try {
             let compteConfig = "";
-            console.log(req.body)
             for (let i = 0; i < req.body.devise.length; i++) {
                 compteConfig = await compteModel.findByIdAndUpdate(
                     req.body.compteId,
