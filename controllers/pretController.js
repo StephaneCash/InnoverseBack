@@ -10,6 +10,22 @@ module.exports.getAllprets = async (req, res) => {
     }
 };
 
+module.exports.getAllpretsByUserId = async (req, res) => {
+    if (!ObjectID.isValid(req.params.id)) {
+        return res.status(400).send('ID inconnu : ' + req.params.id)
+    }
+    else {
+        try {
+            const prets = await PretModel.find({
+                userId: req.params.id
+            });
+            res.status(200).json({ data: prets, taille: prets.length });
+        } catch (error) {
+            return res.status(500).json({ error });
+        }
+    }
+};
+
 module.exports.addPret = async (req, res) => {
     try {
         let pret = await PretModel.create(req.body);
@@ -27,7 +43,10 @@ module.exports.getOnepret = (req, res) => {
     } else {
         PretModel.findById(req.params.id, (err, docs) => {
             if (!err) {
-                res.send(docs);
+                res.json({
+                    data: docs,
+                    message: docs ? "Prêt trouvé avec succès" : "Aucun prêt trouvé"
+                });
             } else {
                 console.log('ID inconnu : ' + err);
             }
