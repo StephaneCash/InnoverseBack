@@ -63,7 +63,6 @@ const signUp = async (req, res) => {
     catch (err) {
         res.status(500).send({ err });
     }
-
 }
 
 const signIn = async (req, res) => {

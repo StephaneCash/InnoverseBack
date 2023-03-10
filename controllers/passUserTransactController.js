@@ -102,5 +102,34 @@ module.exports.deletePass = async (req, res) => {
 }
 
 module.exports.decodePassword = async (req, res) => {
+    try {
+        if (!ObjectID.isValid(req.body.idUser)) {
+            return res.status(400).json({ message: 'ID inconnu : ', data: req.body.idUser })
+        } else {
+            PassModel.findById(req.body.idUser, (err, docs) => {
+                if (req.body.password) {
+                    if (!err) {
+                        bcrypt.compare(req.body.password, docs.password)
+                            .then(isValid => {
+                                if (!isValid) {
+                                    res.status(401).json({ message: "Le mot de passe est incorrect" });
+                                } else {
+                                    res.status(200).json({ "message ": 'Mot de passe correct' })
+                                }
+                            })
+                            .catch(err => {
+                                return res.status(500).json({ err })
+                            })
+                    } else {
+                        return res.status(404).json({ message: "User non trouvé", data: req.body.idUser });
+                    }
+                } else {
+                    return res.status(400).json({ message: "Entrer votre mot de passe svp.", });
+                }
+            });
+        }
 
+    } catch (error) {
+        return res.status(500).json({ error })
+    }
 }

@@ -7,4 +7,6 @@ router.get('/:id', PassWordTransaction.getOnePass);
 router.put('/:id', PassWordTransaction.updatePass);
 router.delete('/:id', PassWordTransaction.deletePass);
 
+router.post('/find', PassWordTransaction.decodePassword);
+
 module.exports = router;
