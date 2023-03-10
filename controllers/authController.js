@@ -1,6 +1,6 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-const { signUpErrors, signInErrors } = require('../utils/errorsUtiles')
+const { signInErrors } = require('../utils/errorsUtiles')
 const compteModel = require('../models/compteModel');
 const bcrypt = require('bcrypt');
 
