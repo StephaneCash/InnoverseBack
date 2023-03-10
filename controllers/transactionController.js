@@ -17,7 +17,6 @@ module.exports.getAllTransactions = async (req, res) => {
 };
 
 module.exports.addTransaction = async (req, res) => {
-
     try {
         if (typeof (req.body.montant) === "object") {
             for (let i = 0; i < req.body.montant.length; i++) {
@@ -128,7 +127,7 @@ module.exports.addTransaction = async (req, res) => {
             }
         }
     } catch (error) {
-        return res.status(500).json(error)
+        return res.status(500).json(error);
     }
 }
 
