@@ -98,8 +98,7 @@ module.exports.convertDevise = async (req, res) => {
                     }
                 } else {
                     return res.status(400).json({
-                        message: "Votre solde est insuffisant pour convertir car "
-                            + repCompte.montant + " < " + req.body.montantAconvertir
+                        message: "Votre solde est insuffisant pour convertir."
                     });
                 }
             } else {
