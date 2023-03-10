@@ -84,13 +84,13 @@ module.exports.convertDevise = async (req, res) => {
         { _id: req.body.compteId },
         (err, docs) => {
             const repCompte = docs.devises.find((compte) =>
-                compte.devise.equals(req.body.deviseDe)
+                compte.devise === req.body.deviseDe ? true : false
             );
             if (repCompte) {
                 repCompte.montant = repCompte.montant - req.body.montantAconvertir;
 
                 const deviseConvertie = docs.devises.find((compte) =>
-                    compte.devise.equals(req.body.deviseVers)
+                    compte.devise === req.body.deviseVers ? true : false
                 );
                 if (deviseConvertie) {
                     deviseConvertie.montant = deviseConvertie.montant + req.body.montantConverti
