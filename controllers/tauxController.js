@@ -87,13 +87,20 @@ module.exports.convertDevise = async (req, res) => {
                 compte.devise === req.body.deviseDe ? true : false
             );
             if (repCompte) {
-                repCompte.montant = repCompte.montant - req.body.montantAconvertir;
+                if (repCompte.montant > req.body.montantAconvertir) {
+                    repCompte.montant = repCompte.montant - req.body.montantAconvertir;
 
-                const deviseConvertie = docs.devises.find((compte) =>
-                    compte.devise === req.body.deviseVers ? true : false
-                );
-                if (deviseConvertie) {
-                    deviseConvertie.montant = deviseConvertie.montant + req.body.montantConverti
+                    const deviseConvertie = docs.devises.find((compte) =>
+                        compte.devise === req.body.deviseVers ? true : false
+                    );
+                    if (deviseConvertie) {
+                        deviseConvertie.montant = deviseConvertie.montant + req.body.montantConverti
+                    }
+                } else {
+                    return res.status(400).json({
+                        message: "Votre solde est insuffisant pour convertir car "
+                            + repCompte.montant + " < " + req.body.montantAconvertir
+                    });
                 }
             } else {
                 return res.status(404).send('Compte non trouvé ' + req.body.compteId);
