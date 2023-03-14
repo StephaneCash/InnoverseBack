@@ -1,6 +1,5 @@
 const compteModel = require('../models/compteModel');
 const transactionModel = require('../models/transactionModel');
-const userModel = require('../models/userModel');
 const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllTransactions = async (req, res) => {
