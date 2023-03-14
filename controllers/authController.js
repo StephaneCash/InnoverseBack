@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const { signInErrors } = require('../utils/errorsUtiles')
 const compteModel = require('../models/compteModel');
 const bcrypt = require('bcrypt');
+const QRCode = require('qrcode');
+
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
@@ -29,6 +31,8 @@ const signUp = async (req, res) => {
 
     const { pseudo, email, password } = req.body;
 
+    const url = "A" + codeGenere;
+
     try {
         userModel.findOne({ email: email })
             .then(async resp => {
@@ -42,22 +46,32 @@ const signUp = async (req, res) => {
                         const passHash = await bcrypt.hash(password, salt);
                         const user = await userModel.create({ pseudo, email, password: passHash });
 
-                        compteModel.create({
-                            userId: user._id,
-                            numero: "A" + codeGenere,
-                            isValid: false,
-                            devises: []
-                        })
-                            .then(() => {
-                                res.status(201).json({ message: 'Utilisateur créé avec succès' });
+                        if (user) {
+                            QRCode.toDataURL(url, (err, url) => {
+                                if (err) {
+                                    return res.status(500).json({ err })
+                                } else {
+                                    compteModel.create({
+                                        userId: user._id,
+                                        numero: "A" + codeGenere,
+                                        isValid: false,
+                                        devises: [],
+                                        dataQrCode: "A" + codeGenere,
+                                        urlQR: url
+                                    })
+                                        .then(() => {
+                                            res.status(201).json({ message: 'Utilisateur créé avec succès' });
+                                        })
+                                        .catch(error => {
+                                            return res.status(500).json(error)
+                                        })
+                                }
                             })
-                            .catch(error => {
-                                return res.status(500).json(error)
-                            })
+                        }
                     }
                 }
             }).catch(err => {
-                console.log(err)
+                return res.status(500).json({ err });
             })
     }
     catch (err) {

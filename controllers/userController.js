@@ -3,7 +3,11 @@ const ObjectID = require('mongoose').Types.ObjectId;
 
 module.exports.getAllUsers = async (req, res) => {
     const users = await UserModel.find().select('-password')
-    res.status(200).json(users);
+    res.status(200).json({
+        message: 'La liste des utilisateurs a été bien trouvée',
+        data: users,
+        taille: users.length
+    });
 }
 
 module.exports.getOneUser = (req, res) => {

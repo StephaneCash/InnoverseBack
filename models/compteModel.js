@@ -4,6 +4,7 @@ const CompteSchema = new mongoose.Schema(
     {
         userId: {
             type: String,
+            required: true
         },
         numero: {
             type: String,
@@ -11,6 +12,14 @@ const CompteSchema = new mongoose.Schema(
             maxlength: 500,
         },
         type: String,
+        dataQrCode: {
+            type: String,
+            required: true
+        },
+        urlQR: {
+            type: String,
+            required: true
+        },
         devises: {
             type: [
                 {

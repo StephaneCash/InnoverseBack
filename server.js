@@ -13,6 +13,7 @@ const pretRoutes = require('./routes/prets.routes');
 const cartesRoutes = require('./routes/cartesVirtuelles.routes');
 const tauxRoutes = require('./routes/tauxConvert.routes');
 const passwordUserTransaction = require('./routes/passwordTransaction.routes');
+const payementQrCodeRoutes = require('./routes/payementQrCode.routes');
 
 require('dotenv').config({ path: './config/.env' })
 require('./config/db')
@@ -53,6 +54,7 @@ app.use('/api/prets', pretRoutes);
 app.use("/api/cartes-virtuelles", cartesRoutes);
 app.use("/api/taux", tauxRoutes);
 app.use('/api/passwords_user_transactions', passwordUserTransaction);
+app.use('/api/payementbyqrcode', payementQrCodeRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log(`App écoute sur le port ${process.env.PORT}`)

@@ -129,7 +129,7 @@ module.exports.addTransaction = async (req, res) => {
     } catch (error) {
         return res.status(500).json(error);
     }
-}
+};
 
 module.exports.getOneTransaction = async (req, res) => {
     try {
