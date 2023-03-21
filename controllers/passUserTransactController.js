@@ -17,24 +17,40 @@ module.exports.addPass = async (req, res) => {
 
             let password = req.body.password;
 
-            if (password.length < 6) {
-                return res.status(400).json({ message: "Votre mot de passe doit avoir au minimum 6 caractères" });
-            } else {
-                if ((/[0-9]/g).test(password) && (/[a-z]/g).test(password) && (/[.;,@~#*éçà]/g).test(password)) {
-                    const salt = await bcrypt.genSalt();
-                    const passHash = await bcrypt.hash(password, salt);
+            let passUserExist = PassModel.findOne({ userId: req.body.userId });
 
-                    let Pass = await PassModel.create({
-                        idUser: req.body.idUser,
-                        password: passHash
-                    });
-                    if (Pass) {
-                        res.status(201).json({ message: "Password user créé avec succès", data: Pass });
-                    }
+            if (passUserExist) {
+                await PassModel.findOneAndUpdate(
+                    { _id: req.params.id },
+                    req.body,
+                    { new: true, upsert: true, setDefaultsOnInsert: true }
+                )
+                    .then((docs) => {
+                        res.status(200).json({
+                            docs, message: 'Pass updated'
+                        })
+                    })
+                    .catch((err) => { return res.status(500).send({ message: err }) })
+            } else {
+                if (password.length < 4) {
+                    return res.status(400).json({ message: "Votre mot de passe doit avoir au minimum 4 caractères" });
                 } else {
-                    return res.status(400).json({
-                        message: "Votre mot de passe doit avoir au minimum une lettre majuscule, minuscule, un chiffre et un caractère spécial"
-                    });
+                    if ((/[0-9]/g).test(password) && (/[a-z]/g).test(password) && (/[.;,@~#*éçà]/g).test(password)) {
+                        const salt = await bcrypt.genSalt();
+                        const passHash = await bcrypt.hash(password, salt);
+
+                        let Pass = await PassModel.create({
+                            idUser: req.body.idUser,
+                            password: passHash
+                        });
+                        if (Pass) {
+                            res.status(201).json({ message: "Password user créé avec succès", data: Pass });
+                        }
+                    } else {
+                        return res.status(400).json({
+                            message: "Votre mot de passe doit avoir au minimum une lettre majuscule, minuscule, un chiffre et un caractère spécial"
+                        });
+                    }
                 }
             }
         } else {
