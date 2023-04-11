@@ -9,7 +9,7 @@ module.exports.getAllPhotoUser = async (req, res) => {
 module.exports.addPhotoUser = async (req, res) => {
     try {
         const photo = req.files.image;
-        photo.mv('../innoverseclient/public/' + photo.name);
+        photo.mv('../front/public/' + photo.name);
         let photoUser = await PhotoUser.create({
             url: photo.name,
             userId: req.body.userId
