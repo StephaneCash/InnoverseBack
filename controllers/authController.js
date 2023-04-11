@@ -4,6 +4,7 @@ const { signInErrors } = require('../utils/errorsUtiles')
 const compteModel = require('../models/compteModel');
 const bcrypt = require('bcrypt');
 const QRCode = require('qrcode');
+const passUserTransacModel = require('../models/passUserTransacModel');
 
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
@@ -59,14 +60,15 @@ const signUp = async (req, res) => {
                                         dataQrCode: "A" + codeGenere,
                                         urlQR: url
                                     })
-                                        .then(() => {
-                                            res.status(201).json({ message: 'Utilisateur créé avec succès' });
+                                        .then(async () => {
+                                            await passUserTransacModel.create({ idUser: user._id, password: passHash });
+                                            res.status(201).json({ message: "User créé avec succès" });
                                         })
                                         .catch(error => {
                                             return res.status(500).json(error)
                                         })
                                 }
-                            })
+                            });
                         }
                     }
                 }
