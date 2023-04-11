@@ -12,49 +12,40 @@ module.exports.getAllPassUsers = async (req, res) => {
 };
 
 module.exports.addPass = async (req, res) => {
+    const { ancienPin, password, idUser } = req.body;
+
+    const salt = await bcrypt.genSalt();
+    const passHash = await bcrypt.hash(password, salt);
+
     try {
-        if (ObjectID.isValid(req.body.idUser)) {
-            if (req.body.password) {
-                let password = req.body.password;
-
-                let passUserExist = PassModel.findOne({ userId: req.body.userId });
-
+        if (ObjectID.isValid(idUser)) {
+            if (password) {
+                let passUserExist = await PassModel.findOne({ idUser: idUser });
                 if (passUserExist) {
-                    if (req.body.passLast) {
-                        PassModel.findOneAndUpdate(
-                            { _id: req.params.id },
-                            req.body,
-                            { new: true, upsert: true, setDefaultsOnInsert: true }
-                        )
-                            .then((docs) => {
-                                res.status(200).json({
-                                    docs, message: 'Pass updated'
-                                })
+                    if (ancienPin) {
+                        bcrypt.compare(ancienPin, passUserExist.password)
+                            .then(isValid => {
+                                if (!isValid) {
+                                    res.status(400).json({ message: "L'ancien mot de passe est incorrect" });
+                                } else {
+                                    PassModel.findOneAndUpdate(
+                                        { _id: passUserExist._id },
+                                        { password: passHash, isChange: true },
+                                        { new: true, upsert: true, setDefaultsOnInsert: true }
+                                    )
+                                        .then((docs) => {
+                                            res.status(200).json({
+                                                docs, message: 'Votre PIN a été modifié avec succès'
+                                            })
+                                        })
+                                        .catch((err) => { return res.status(500).send({ message: err }) })
+                                }
                             })
-                            .catch((err) => { return res.status(500).send({ message: err }) })
+                            .catch(err => {
+                                return res.status(500).json({ err })
+                            })
                     } else {
                         return res.status(400).json({ message: "Veuillez fournir votre ancien PIN" })
-                    }
-                } else {
-                    if (password.length < 4) {
-                        return res.status(400).json({ message: "Votre mot de passe doit avoir au minimum 4 caractères" });
-                    } else {
-                        if ((/[0-9]/g).test(password) && (/[a-z]/g).test(password) && (/[.;,@~#*éçà]/g).test(password)) {
-                            const salt = await bcrypt.genSalt();
-                            const passHash = await bcrypt.hash(password, salt);
-
-                            let Pass = await PassModel.create({
-                                idUser: req.body.idUser,
-                                password: passHash
-                            });
-                            if (Pass) {
-                                res.status(201).json({ message: "Password user créé avec succès", data: Pass });
-                            }
-                        } else {
-                            return res.status(400).json({
-                                message: "Votre mot de passe doit avoir au minimum une lettre majuscule, minuscule, un chiffre et un caractère spécial"
-                            });
-                        }
                     }
                 }
             } else {

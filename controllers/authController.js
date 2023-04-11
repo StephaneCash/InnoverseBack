@@ -61,7 +61,7 @@ const signUp = async (req, res) => {
                                         urlQR: url
                                     })
                                         .then(async () => {
-                                            await passUserTransacModel.create({ idUser: user._id, password: passHash });
+                                            await passUserTransacModel.create({ idUser: user._id, password: passHash, isChange: false });
                                             res.status(201).json({ message: "User créé avec succès" });
                                         })
                                         .catch(error => {
